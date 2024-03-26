@@ -8,6 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type Organization = {
     id: string;
@@ -86,14 +87,14 @@ export const NavItem = ({
             <AccordionContent className="pt-1 text-neutral-700">
                 {routes.map((route) => (
                     <Button
-                    key={route.href}
-                    size="sm"
-                    onClick={() => onClick(route.href)}
-                    className={cn(
-                        "w-full font-normal justify-start pl-10 mb-1",
-                        pathname===route.href && "bg-sky-500/10 bg-sky-700"
-                    )}
-                    variant={"ghost"}
+                        key={route.href}
+                        size="sm"
+                        onClick={() => onClick(route.href)}
+                        className={cn(
+                            "w-full font-normal justify-start pl-10 mb-1",
+                            pathname === route.href && "bg-sky-500/10 bg-sky-700"
+                        )}
+                        variant={"ghost"}
                     >
                         {route.icon}
                         {route.labbel}
@@ -102,5 +103,17 @@ export const NavItem = ({
             </AccordionContent>
         </AccordionItem>
         // the video is 38:15
+    )
+}
+
+NavItem.Skeleton = function SkeletonNavItem() {
+
+    return (
+        <div className="flex items-center gap-x-2">
+            <div className="w-10 h-10 relative shrink-0">
+                <Skeleton className="h-full w-full absolute" />
+            </div>
+            <Skeleton className="h-10 w-full" />
+        </div>
     )
 }
