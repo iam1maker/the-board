@@ -101,5 +101,6 @@ export const NavItem = ({
                 ))}
             </AccordionContent>
         </AccordionItem>
+        // the video is 38:15
     )
 }
