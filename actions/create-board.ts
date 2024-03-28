@@ -15,11 +15,11 @@ export type State = {
 
 const CreateBoard = z.object({
     title: z.string().min(3, {
-        message: "Minimum length of 3 letters is required"
+        message: "Minimum length of 3 letters is required！"
     }),
 });
 
-export async function create(prevState: State, formData: FormData){
+export async function create(prevState: State, formData: FormData) {
 
     const validatedFields = CreateBoard.safeParse({
         title: formData.get("title"),
