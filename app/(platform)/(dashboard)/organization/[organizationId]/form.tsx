@@ -3,7 +3,7 @@
 import { useAction } from "@/hooks/use-action";
 import { createBoard } from "@/actions/create-board";
 import { FormInput } from "@/components/form/form-input";
-import { FormButton } from "./form-button";
+import { FormSubmit } from "@/components/form/form-submit";
 
 export const Form = () => {
 
@@ -35,7 +35,9 @@ export const Form = () => {
                 errors={fieldErrors} 
                 />
             </div>
-            <FormButton />
+            <FormSubmit>
+                Save
+            </FormSubmit>
         </form>
     )
 }
