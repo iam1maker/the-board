@@ -5,9 +5,9 @@ const OrganizationIdLayout = ({ children }: {
 }) => {
     return (
         <>
-            <OrgControl/>
+            <OrgControl />
             {children}
-            </>
+        </>
     )
 }
 
