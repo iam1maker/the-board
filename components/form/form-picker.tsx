@@ -29,7 +29,7 @@ export const FormPicker = ({
         const fetchImages = async () => {
             try {
                 // TODO fix this
-                throw new Error("Unsplash API is not working");
+                // throw new Error("Unsplash API is not working");
                 const result = await unsplash.photos.getRandom({
                     collectionIds: ["317099"],
                     count: 9,
@@ -72,7 +72,6 @@ export const FormPicker = ({
                             if (pending) {
                                 return;
                             }
-                            // console.log(image.id, "SELECTED IMAGE")
                             setSelectedImageId(image.id)
                         }}
                     >
