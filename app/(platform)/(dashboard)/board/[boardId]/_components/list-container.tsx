@@ -15,10 +15,11 @@ export const ListContainer = ({
 }: ListContainerProps) => {
 
     const [orderedData, setOrderedData] = useState(data);
+
     //乐观更新
     useEffect(() => {
         setOrderedData(data);
-    }, [data])
+    }, [data]);
 
     return (
         <ol className="flex gap-x-3 h-full">
