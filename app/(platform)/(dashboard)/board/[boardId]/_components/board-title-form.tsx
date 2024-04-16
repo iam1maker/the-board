@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import { ElementRef, useRef, useState } from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { Board } from "@prisma/client";
 import { FormInput } from "@/components/form/form-input";
 import { updateBoard } from "@/actions/update-board";
@@ -9,13 +9,9 @@ import { toast } from "sonner";
 
 interface BoardTitleFormProps {
     data: Board;
-};
+}
 
-
-export const BoardTitleForm = ({
-    data,
-}: BoardTitleFormProps) => {
-
+export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
     const { execute } = useAction(updateBoard, {
         onSuccess(data) {
             toast.success(`Board "${data.title}" updated`);
@@ -24,22 +20,21 @@ export const BoardTitleForm = ({
         },
         onError: (error) => {
             toast.error(error);
-        }
-    })
+        },
+    });
 
-    const formRef = useRef<ElementRef<"form">>(null)
+    const formRef = useRef<ElementRef<"form">>(null);
     const inputRef = useRef<ElementRef<"input">>(null);
 
     const [title, setTitle] = useState(data.title);
     const [isEditing, setIsEditing] = useState(false);
 
     const enableEditing = () => {
-
         setIsEditing(true);
         setTimeout(() => {
             inputRef.current?.focus();
             inputRef.current?.select();
-        })
+        });
     };
 
     const disableEditing = () => {
@@ -74,7 +69,7 @@ export const BoardTitleForm = ({
                      focus-visible:outline-none focus-visible:ring-transparent border-none"
                 />
             </form>
-        )
+        );
     }
 
     return (

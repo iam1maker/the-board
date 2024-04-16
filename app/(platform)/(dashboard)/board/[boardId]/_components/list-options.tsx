@@ -1,48 +1,44 @@
-"use client"
+"use client";
 
-import { List } from "@prisma/client"
-import { Popover, PopoverClose, PopoverContent, } from "@/components/ui/popover"
-import { PopoverTrigger } from "@radix-ui/react-popover"
-import { Button } from "@/components/ui/button"
-import { MoreHorizontal, X } from "lucide-react"
-import { FormSubmit } from "@/components/form/form-submit"
-import { Separator } from "@/components/ui/separator"
+import { List } from "@prisma/client";
+import { Popover, PopoverClose, PopoverContent } from "@/components/ui/popover";
+import { PopoverTrigger } from "@radix-ui/react-popover";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, X } from "lucide-react";
+import { FormSubmit } from "@/components/form/form-submit";
+import { Separator } from "@/components/ui/separator";
 import { useAction } from "@/hooks/use-action";
-import { deleteList } from "@/actions/delete-list"
-import { toast } from "sonner"
+import { deleteList } from "@/actions/delete-list";
+import { toast } from "sonner";
 import { ElementRef, useRef } from "react";
-import { copyList } from "@/actions/copy-list"
+import { copyList } from "@/actions/copy-list";
 
 interface ListOptionsProps {
-    data: List
-    onAddCard: () => void
+    data: List;
+    onAddCard: () => void;
 }
 
-export const ListOptions = ({
-    data,
-    onAddCard,
-}: ListOptionsProps) => {
-
+export const ListOptions = ({ data, onAddCard }: ListOptionsProps) => {
     const closeRef = useRef<ElementRef<"button">>(null);
 
     const { execute: executeDelete } = useAction(deleteList, {
         onSuccess: (data) => {
-            toast.success(`List "${data.title}" deleted`)
+            toast.success(`List "${data.title}" deleted`);
             closeRef.current?.click();
         },
         onError: (error) => {
-            toast.error(error)
-        }
+            toast.error(error);
+        },
     });
 
     const { execute: executeCopy } = useAction(copyList, {
         onSuccess: (data) => {
-            toast.success(`List "${data.title}" copy`)
+            toast.success(`List "${data.title}" copy`);
             closeRef.current?.click();
         },
         onError: (error) => {
-            toast.error(error)
-        }
+            toast.error(error);
+        },
     });
 
     const onDelete = (formData: FormData) => {
@@ -59,20 +55,26 @@ export const ListOptions = ({
         executeCopy({ id, boardId });
     };
 
-
     return (
-        <Popover >
+        <Popover>
             <PopoverTrigger asChild>
                 <Button className="h-auto w-auto p-2" variant={"ghost"}>
                     <MoreHorizontal className="h-4w-4" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className=" px-0 pt-3 pb-3" side="bottom" align="start">
+            <PopoverContent
+                className=" px-0 pt-3 pb-3"
+                side="bottom"
+                align="start"
+            >
                 <div className="text-sm font-medium text-center text-neutral-600 pb-4">
                     List actions
                 </div>
                 <PopoverClose asChild ref={closeRef}>
-                    <Button className=" h-auto w-auto p-2 absolute top-2 right-2 text-neutral-600" variant={"ghost"}>
+                    <Button
+                        className=" h-auto w-auto p-2 absolute top-2 right-2 text-neutral-600"
+                        variant={"ghost"}
+                    >
                         <X className="h-4 w-4" />
                     </Button>
                 </PopoverClose>
@@ -83,11 +85,14 @@ export const ListOptions = ({
                 >
                     Add card...
                 </Button>
-                <form
-                    action={onCopy}
-                >
+                <form action={onCopy}>
                     <input hidden name="id" id="id" value={data.id} />
-                    <input hidden name="boardId" id="boardId" value={data.boardId} />
+                    <input
+                        hidden
+                        name="boardId"
+                        id="boardId"
+                        value={data.boardId}
+                    />
                     <FormSubmit
                         variant="ghost"
                         className=" rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
@@ -96,11 +101,14 @@ export const ListOptions = ({
                     </FormSubmit>
                 </form>
                 <Separator />
-                <form
-                    action={onDelete}
-                >
+                <form action={onDelete}>
                     <input hidden name="id" id="id" value={data.id} />
-                    <input hidden name="boardId" id="boardId" value={data.boardId} />
+                    <input
+                        hidden
+                        name="boardId"
+                        id="boardId"
+                        value={data.boardId}
+                    />
                     <FormSubmit
                         variant="ghost"
                         className=" rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
@@ -110,5 +118,5 @@ export const ListOptions = ({
                 </form>
             </PopoverContent>
         </Popover>
-    )
-}
+    );
+};

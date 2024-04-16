@@ -1,12 +1,14 @@
-"use client"
+"use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import {
-    Activity, CreditCard, Layout, Settings
-} from "lucide-react"
+import { Activity, CreditCard, Layout, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -22,12 +24,14 @@ interface NavItemProps {
     isActive: boolean;
     organization: Organization;
     onExpand: (id: string) => void;
-};
+}
 
 export const NavItem = ({
-    isExpanded, isActive, organization, onExpand
+    isExpanded,
+    isActive,
+    organization,
+    onExpand,
 }: NavItemProps) => {
-
     const router = useRouter();
     const pathname = usePathname();
 
@@ -35,22 +39,22 @@ export const NavItem = ({
         {
             labbel: "Boards",
             icon: <Layout className="w-4 h-4 mr-2" />,
-            href: `/organization/${organization.id}`
+            href: `/organization/${organization.id}`,
         },
         {
             labbel: "Activity",
             icon: <Activity className="w-4 h-4 mr-2" />,
-            href: `/organization/${organization.id}/activity`
+            href: `/organization/${organization.id}/activity`,
         },
         {
             labbel: "Settings",
             icon: <Layout className="w-4 h-4 mr-2" />,
-            href: `/organization/${organization.id}/settings`
+            href: `/organization/${organization.id}/settings`,
         },
         {
             labbel: "Billing",
             icon: <CreditCard className="w-4 h-4 mr-2" />,
-            href: `/organization/${organization.id}/billing`
+            href: `/organization/${organization.id}/billing`,
         },
     ];
 
@@ -59,10 +63,7 @@ export const NavItem = ({
     };
 
     return (
-        <AccordionItem
-            value={organization.id}
-            className="border-none"
-        >
+        <AccordionItem value={organization.id} className="border-none">
             <AccordionTrigger
                 onClick={() => onExpand(organization.id)}
                 className={cn(
@@ -92,7 +93,8 @@ export const NavItem = ({
                         onClick={() => onClick(route.href)}
                         className={cn(
                             "w-full font-normal justify-start pl-10 mb-1",
-                            pathname === route.href && "bg-sky-500/10 bg-sky-700"
+                            pathname === route.href &&
+                                "bg-sky-500/10 bg-sky-700"
                         )}
                         variant={"ghost"}
                     >
@@ -102,11 +104,10 @@ export const NavItem = ({
                 ))}
             </AccordionContent>
         </AccordionItem>
-    )
-}
+    );
+};
 
 NavItem.Skeleton = function SkeletonNavItem() {
-
     return (
         <div className="flex items-center gap-x-2">
             <div className="w-10 h-10 relative shrink-0">
@@ -114,5 +115,5 @@ NavItem.Skeleton = function SkeletonNavItem() {
             </div>
             <Skeleton className="h-10 w-full" />
         </div>
-    )
-}
+    );
+};

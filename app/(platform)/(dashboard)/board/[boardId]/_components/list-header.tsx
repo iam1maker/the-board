@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import { updateList } from "@/actions/update-list";
 import { FormInput } from "@/components/form/form-input";
 import { useAction } from "@/hooks/use-action";
-import { List } from "@prisma/client"
+import { List } from "@prisma/client";
 import { useState, useRef, ElementRef } from "react";
 import { toast } from "sonner";
 import { useEventListener } from "usehooks-ts";
@@ -11,10 +11,10 @@ import { ListOptions } from "./list-options";
 
 interface ListHeaderprops {
     data: List;
+    onAddCard: () => void;
 }
 
-export const ListHeader = ({ data }: ListHeaderprops) => {
-
+export const ListHeader = ({ data, onAddCard }: ListHeaderprops) => {
     const [title, setTitle] = useState(data.title);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -26,12 +26,12 @@ export const ListHeader = ({ data }: ListHeaderprops) => {
         setTimeout(() => {
             inputRef.current?.focus();
             inputRef.current?.select();
-        })
-    }
+        });
+    };
 
     const disableEditing = () => {
         setIsEditing(false);
-    }
+    };
 
     const { execute } = useAction(updateList, {
         onSuccess(data) {
@@ -42,7 +42,7 @@ export const ListHeader = ({ data }: ListHeaderprops) => {
         onError(error) {
             toast.error(error);
         },
-    })
+    });
 
     const handleSubmit = (formData: FormData) => {
         const title = formData.get("title") as string;
@@ -54,24 +54,25 @@ export const ListHeader = ({ data }: ListHeaderprops) => {
         }
 
         execute({ id, title, boardId });
-    }
+    };
 
     const onBlur = () => {
         formRef.current?.requestSubmit();
-    }
-
+    };
 
     const onKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
             formRef.current?.requestSubmit();
         }
-    }
+    };
 
-    useEventListener("keydown", onKeyDown)
+    useEventListener("keydown", onKeyDown);
 
     return (
-        <div className="pt-2 px-2 text-sm font-semibold flex 
-        justify-between items-start gap-x-2">
+        <div
+            className="pt-2 px-2 text-sm font-semibold flex 
+        justify-between items-start gap-x-2"
+        >
             {isEditing ? (
                 <form
                     ref={formRef}
@@ -79,7 +80,12 @@ export const ListHeader = ({ data }: ListHeaderprops) => {
                     className="flex-1 px-[2px]"
                 >
                     <input hidden id="id" name="id" value={data.id} />
-                    <input hidden id="boardId" name="boardId" value={data.boardId} />
+                    <input
+                        hidden
+                        id="boardId"
+                        name="boardId"
+                        value={data.boardId}
+                    />
                     <FormInput
                         ref={inputRef}
                         onBlur={onBlur}
@@ -94,15 +100,12 @@ export const ListHeader = ({ data }: ListHeaderprops) => {
             ) : (
                 <div
                     onClick={enableEditing}
-                    className="w-full text-sm px-2.5 py-1 h-7 font-medium 
-            border-transparent">
+                    className="w-full text-sm px-2.5 py-1 h-7 font-medium border-transparent"
+                >
                     {data.title}
                 </div>
             )}
-            <ListOptions
-                data={data}
-                onAddCard={() => { }}
-            />
+            <ListOptions data={data} onAddCard={onAddCard} />
         </div>
-    )
-}
+    );
+};
