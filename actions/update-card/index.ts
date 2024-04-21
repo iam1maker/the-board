@@ -6,6 +6,8 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateCard } from "./schema";
+import { createAuditLog } from "@/lib/create-audit-log";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 /**
  * 异步处理更新卡片信息的请求。
@@ -43,6 +45,12 @@ const handler = async (data: InputType): Promise<ReturnType> => {
             data: {
                 ...values,
             }
+        })
+        await createAuditLog({
+            entityTitle: card.title,
+            entityId: card.id,
+            entityType: ENTITY_TYPE.CARD,
+            action: ACTION.UPDATE
         })
     } catch (error) {
         // 更新失败时，返回错误信息
