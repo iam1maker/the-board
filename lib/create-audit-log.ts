@@ -10,15 +10,13 @@ interface Props {
     action: ACTION;
 }
 
-
 export const createAuditLog = async (props: Props) => {
-
     try {
         const { orgId } = auth();
         const user = await currentUser();
 
         if (!user || !orgId) {
-            throw new Error("User not found")
+            throw new Error("User not found");
         }
 
         const { entityId, entityType, entityTitle, action } = props;
@@ -32,10 +30,10 @@ export const createAuditLog = async (props: Props) => {
                 action,
                 userId: user.id,
                 userImage: user?.imageUrl,
-                userName: user?.firstName + " " + user?.lastName
-            }
+                userName: user?.firstName + " " + user?.lastName,
+            },
         });
     } catch (error) {
-        console.log("[AUDIT_LOG_ERROR]", error)
+        console.log("[AUDIT_LOG_ERROR]", error);
     }
-}
+};

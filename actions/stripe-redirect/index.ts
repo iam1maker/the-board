@@ -1,7 +1,7 @@
-"use server"
+"use server";
 
-import { auth, currentUser } from "@clerk/nextjs"
-import { InputType, ReturnType } from "./type"
+import { auth, currentUser } from "@clerk/nextjs";
+import { InputType, ReturnType } from "./type";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
@@ -10,9 +10,8 @@ import { absoluteUrl } from "@/lib/utils";
 import { stripe } from "@/lib/stripe";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-
     const { userId, orgId } = auth();
-    const user = await currentUser()
+    const user = await currentUser();
 
     if (!userId || !orgId || !user) {
         return {
@@ -28,14 +27,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         const orgSubscription = await db.orgSubscription.findUnique({
             where: {
                 orgId,
-            }
-        })
+            },
+        });
 
         if (orgSubscription && orgSubscription.stripeCustomerId) {
             const stripeSession = await stripe.billingPortal.sessions.create({
                 customer: orgSubscription.stripeCustomerId,
-                return_url: settingsUrl
-            })
+                return_url: settingsUrl,
+            });
             url = stripeSession.url;
         } else {
             const stripeSession = await stripe.checkout.sessions.create({
@@ -51,31 +50,30 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                             currency: "USD",
                             product_data: {
                                 name: "Taskify Pro",
-                                description: "Unlimited boards for your organization"
+                                description:
+                                    "Unlimited boards for your organization",
                             },
                             unit_amount: 2000,
                             recurring: {
-                                interval: "month"
+                                interval: "month",
                             },
                         },
                         quantity: 1,
-                    }
+                    },
                 ],
                 metadata: {
-                    orgId
-                }
+                    orgId,
+                },
             });
             url = stripeSession.url || "";
         }
-
     } catch (error) {
-
         return {
-            error: "Something Went  Wrong"
-        }
+            error: "Something Went  Wrong",
+        };
     }
-    revalidatePath(`/organization/${orgId}`)
-    return { data: url }
-}
+    revalidatePath(`/organization/${orgId}`);
+    return { data: url };
+};
 
-export const stripeRedirect = createSafeAction(StripeRedirect, handler)
+export const stripeRedirect = createSafeAction(StripeRedirect, handler);

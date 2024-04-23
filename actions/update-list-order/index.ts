@@ -1,14 +1,13 @@
-"use server"
+"use server";
 
-import { auth } from "@clerk/nextjs"
-import { InputType, ReturnType } from "./type"
+import { auth } from "@clerk/nextjs";
+import { InputType, ReturnType } from "./type";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateListOrder } from "./schema";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-
     const { userId, orgId } = auth();
 
     if (!userId || !orgId) {
@@ -27,23 +26,23 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                 where: {
                     id: list.id,
                     board: {
-                        orgId
-                    }
+                        orgId,
+                    },
                 },
                 data: {
                     order: list.order,
-                }
+                },
             })
-        )
+        );
         lists = await db.$transaction(transaction);
     } catch (error) {
         return {
             error: "Failed to reorder lists.",
-        }
+        };
     }
 
     revalidatePath(`/board/${boardId}`);
-    return { data: lists }
-}
+    return { data: lists };
+};
 
-export const updateListOrder = createSafeAction(UpdateListOrder, handler)
+export const updateListOrder = createSafeAction(UpdateListOrder, handler);

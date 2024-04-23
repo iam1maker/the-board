@@ -1,7 +1,7 @@
-"use server"
+"use server";
 
-import { auth } from "@clerk/nextjs"
-import { InputType, ReturnType } from "./type"
+import { auth } from "@clerk/nextjs";
+import { InputType, ReturnType } from "./type";
 import { createAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import { db } from "@/lib/db";
@@ -10,7 +10,6 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateCard } from "./schema";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-
     const { userId, orgId } = auth();
 
     if (!userId || !orgId) {
@@ -29,18 +28,18 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                 id: listId,
                 board: {
                     orgId,
-                }
-            }
-        })
+                },
+            },
+        });
         if (!list) {
             return {
-                error: "List not found."
+                error: "List not found.",
             };
         }
         const lastCard = await db.card.findFirst({
             where: { listId },
             orderBy: { order: "desc" },
-            select: { order: true }
+            select: { order: true },
         });
 
         const newOrder = lastCard ? lastCard.order + 1 : 1;
@@ -50,24 +49,23 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                 title,
                 listId,
                 order: newOrder,
-            }
-        })
+            },
+        });
 
         await createAuditLog({
             entityId: card.id,
             entityTitle: card.title,
             entityType: ENTITY_TYPE.CARD,
-            action: ACTION.CREATE
-        })
-
+            action: ACTION.CREATE,
+        });
     } catch (error) {
         return {
             error: "Failed to create.",
-        }
+        };
     }
 
     revalidatePath(`/board/${boardId}`);
-    return { data: card }
-}
+    return { data: card };
+};
 
-export const createCard = createSafeAction(CreateCard, handler)
+export const createCard = createSafeAction(CreateCard, handler);

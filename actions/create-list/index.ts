@@ -1,7 +1,7 @@
-"use server"
+"use server";
 
-import { auth } from "@clerk/nextjs"
-import { InputType, ReturnType } from "./type"
+import { auth } from "@clerk/nextjs";
+import { InputType, ReturnType } from "./type";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
@@ -10,7 +10,6 @@ import { createAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-
     const { userId, orgId } = auth();
 
     if (!userId || !orgId) {
@@ -24,7 +23,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     let list;
 
     try {
-
         const board = await db.board.findUnique({
             where: {
                 id: boardId,
@@ -34,7 +32,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
         if (!board) {
             return {
-                error: "Board not found"
+                error: "Board not found",
             };
         }
 
@@ -43,37 +41,36 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                 boardId,
             },
             orderBy: {
-                order: "desc"
+                order: "desc",
             },
             select: {
-                order: true
-            }
-        })
+                order: true,
+            },
+        });
 
         const newOrder = lastList ? lastList.order + 1 : 1;
-
 
         list = await db.list.create({
             data: {
                 title,
                 boardId,
                 order: newOrder,
-            }
-        })
+            },
+        });
         await createAuditLog({
             entityTitle: list.title,
             entityId: list.id,
             entityType: ENTITY_TYPE.LIST,
-            action: ACTION.CREATE
-        })
+            action: ACTION.CREATE,
+        });
     } catch (error) {
         return {
             error: "Failed to create.",
-        }
+        };
     }
 
     revalidatePath(`/board/${boardId}`);
-    return { data: list }
-}
+    return { data: list };
+};
 
-export const createList = createSafeAction(CreateList, handler)
+export const createList = createSafeAction(CreateList, handler);

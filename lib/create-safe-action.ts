@@ -10,7 +10,7 @@ export type ActionState<TInput, TOutput> = {
     fieldErrors?: FieldErrors<TInput>;
     error?: string | null;
     data?: TOutput;
-}
+};
 
 export const createSafeAction = <TInput, TOutput>(
     scheme: z.Schema<TInput>,
@@ -20,9 +20,10 @@ export const createSafeAction = <TInput, TOutput>(
         const validationResult = scheme.safeParse(data);
         if (!validationResult.success) {
             return {
-                fieldErrors: validationResult.error.flatten().fieldErrors as FieldErrors<TInput>,
+                fieldErrors: validationResult.error.flatten()
+                    .fieldErrors as FieldErrors<TInput>,
             };
         }
         return handler(validationResult.data);
-    }
-}
+    };
+};

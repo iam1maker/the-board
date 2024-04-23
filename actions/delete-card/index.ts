@@ -1,7 +1,7 @@
-"use server"
+"use server";
 
-import { auth } from "@clerk/nextjs"
-import { InputType, ReturnType } from "./type"
+import { auth } from "@clerk/nextjs";
+import { InputType, ReturnType } from "./type";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
@@ -10,7 +10,6 @@ import { createAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
-
     const { userId, orgId } = auth();
 
     if (!userId || !orgId) {
@@ -28,25 +27,25 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                 id,
                 list: {
                     board: {
-                        orgId
-                    }
-                }
-            }
-        })
+                        orgId,
+                    },
+                },
+            },
+        });
         await createAuditLog({
             entityTitle: card.title,
             entityId: card.id,
             entityType: ENTITY_TYPE.CARD,
-            action: ACTION.DELETE
-        })
+            action: ACTION.DELETE,
+        });
     } catch (error) {
         return {
             error: "Failed to delete card.",
-        }
+        };
     }
 
     revalidatePath(`/board/${boardId}`);
-    return { data: card }
-}
+    return { data: card };
+};
 
-export const deleteCard = createSafeAction(DeleteCard, handler)
+export const deleteCard = createSafeAction(DeleteCard, handler);
