@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import { unsplash } from "@/lib/unsplash";
@@ -15,15 +15,15 @@ interface FormPickerProps {
     errors?: Record<string, string[] | undefined>;
 }
 
-export const FormPicker = ({
-    id,
-    errors,
-}: FormPickerProps) => {
+export const FormPicker = ({ id, errors }: FormPickerProps) => {
+    const { pending } = useFormStatus();
 
-    const { pending } = useFormStatus()
-    const [images, setImages] = useState<Array<Record<string, any>>>(defaultImages);
-    const [isLoading, setIsLoading] = useState(true)
-    const [selectedImageId, setSelectedImageId] = useState(null)
+    const [images, setImages] =
+        useState<Array<Record<string, any>>>(defaultImages);
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [selectedImageId, setSelectedImageId] = useState(null);
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -35,10 +35,12 @@ export const FormPicker = ({
                     count: 9,
                 });
                 if (result && result.response) {
-                    const newImages = (result.response as Array<Record<string, any>>)
+                    const newImages = result.response as Array<
+                        Record<string, any>
+                    >;
                     setImages(newImages);
                 } else {
-                    console.log("Failed to get images from unsplash")
+                    console.log("Failed to get images from unsplash");
                 }
             } catch (error) {
                 console.log(error);
@@ -55,7 +57,7 @@ export const FormPicker = ({
             <div className="p-6 flex items-center justify-center">
                 <Loader2 className="h-6 w-6 text-sky-700 animate-spin" />
             </div>
-        )
+        );
     }
 
     return (
@@ -72,7 +74,7 @@ export const FormPicker = ({
                             if (pending) {
                                 return;
                             }
-                            setSelectedImageId(image.id)
+                            setSelectedImageId(image.id);
                         }}
                     >
                         <input
@@ -92,12 +94,15 @@ export const FormPicker = ({
                             src={image.urls.thumb}
                         />
                         {selectedImageId === image.id && (
-                            <div className=" absolute inset-y-0 h-full w-full bg-black/30 
-                                flex items-center justify-center">
+                            <div
+                                className=" absolute inset-y-0 h-full w-full bg-black/30 
+                                flex items-center justify-center"
+                            >
                                 <CheckIcon className="h-4 w-4 text-white" />
                             </div>
                         )}
-                        <Link href={image.links.html}
+                        <Link
+                            href={image.links.html}
                             target="_blank"
                             className=" opacity-0 group-hover:opacity-100 absolute 
                             bottom-0 w-full text-[10px] truncate text-white 
@@ -108,10 +113,7 @@ export const FormPicker = ({
                     </div>
                 ))}
             </div>
-            <FormErrors
-                id="image"
-                errors={errors}
-            />
+            <FormErrors id="image" errors={errors} />
         </div>
-    )
-}
+    );
+};

@@ -12,8 +12,8 @@ export const OrgControl = () => {
             return;
         }
         setActive({
-            organization: params.organizationId as string
+            organization: params.organizationId as string,
         });
     }, [setActive, params.organizationId]);
-    return null
-}
+    return null;
+};
