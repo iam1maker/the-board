@@ -1,9 +1,13 @@
 import { create } from "zustand";
 
-type CardModalStore = {
-
+type ProModalStore = {
+    isOpen: boolean;
+    onOpen: () => void;
+    onClose: () => void;
 };
 
-export const useCardModal = create<CardModalStore>((set) => ({
-
+export const useProModal = create<ProModalStore>((set) => ({
+    isOpen: false,
+    onOpen: () => set({ isOpen: true }),
+    onClose: () => set({ isOpen: false }),
 }));
