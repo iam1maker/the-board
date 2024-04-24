@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { db } from "@/lib/db";
 
-const DAY_IN_MS = 84_400_000;
+const DAY_IN_MS = 86_400_000;
 
 /**
  * 检查当前组织是否有有效的订阅。
