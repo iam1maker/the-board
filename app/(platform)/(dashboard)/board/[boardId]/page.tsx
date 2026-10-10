@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs";
 import { db } from "@/lib/db";
+import { BOARD_CARD_INCLUDE } from "@/lib/card-queries";
 import { redirect } from "next/navigation";
 import { ListContainer } from "./_components/list-container";
 
@@ -25,6 +26,7 @@ const BoardIdPage = async ({ params }: BoardIdPageProps) => {
         },
         include: {
             cards: {
+                include: BOARD_CARD_INCLUDE,
                 orderBy: {
                     order: "asc",
                 },

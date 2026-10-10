@@ -1,80 +1,48 @@
 "use client";
 
-import { ElementRef, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlignLeft } from "lucide-react";
-import { useEventListener, useOnClickOutside } from "usehooks-ts";
 import { toast } from "sonner";
 
-import { CardWithList } from "@/types";
+import { CardDetail } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { FormTextarea } from "@/components/form/form-textarea";
-import { FormSubmit } from "@/components/form/form-submit";
-import { useAction } from "@/hooks/use-action";
+import { RichTextEditor } from "@/components/rich-text/rich-text-editor";
+import { RichTextViewer } from "@/components/rich-text/rich-text-viewer";
+import { useCardAction } from "@/hooks/use-card-action";
 import { updateCard } from "@/actions/update-card";
 import { SectionHeading } from "./section-heading";
 
 interface DescriptionProps {
-    data: CardWithList;
+    card: CardDetail;
 }
 
-export const Description = ({ data }: DescriptionProps) => {
-    const params = useParams();
+export const Description = ({ card }: DescriptionProps) => {
     const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState(false);
 
-    const textareaRef = useRef<ElementRef<"textarea">>(null);
-    const formRef = useRef<ElementRef<"form">>(null);
-
-    const enableEditing = () => {
-        setIsEditing(true);
-        setTimeout(() => {
-            textareaRef.current?.focus();
-        });
-    };
-
-    const disableEditing = () => {
-        setIsEditing(false);
-    };
-
-    const onKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-            disableEditing();
-        }
-    };
-
-    useEventListener("keydown", onKeyDown);
-    useOnClickOutside(formRef, disableEditing);
-
-    const { execute, fieldErrors } = useAction(updateCard, {
-        onSuccess(updated) {
-            // 直接写入缓存，保存后立即显示新描述（之前误刷新了 ["boards", id]，导致内容"消失"）。
-            queryClient.setQueryData<CardWithList>(["card", updated.id], (old) =>
-                old ? { ...old, ...updated } : old
+    const { execute, isLoading } = useCardAction(updateCard, card.id, {
+        refreshLogs: true,
+        onSuccess: (updated) => {
+            // 直接写入缓存，保存后立即显示新描述。
+            queryClient.setQueryData<CardDetail>(["card", updated.id], (old) =>
+                old ? { ...old, description: updated.description } : old,
             );
-            queryClient.invalidateQueries({ queryKey: ["card", updated.id] });
-            queryClient.invalidateQueries({
-                queryKey: ["card-logs", updated.id],
-            });
-
-            toast.success(`Card "${updated.title}" updated`);
-            disableEditing();
-        },
-        onError(error) {
-            toast.error(error);
+            toast.success("Description saved");
+            setIsEditing(false);
         },
     });
 
-    const onSubmit = (formData: FormData) => {
-        const description = formData.get("description") as string;
-        const boardId = params.boardId as string;
-
+    const save = (markdown: string) => {
+        if (markdown === (card.description ?? "")) {
+            setIsEditing(false);
+            return;
+        }
         execute({
-            id: data.id,
-            description,
-            boardId,
+            id: card.id,
+            boardId: card.list.board.id,
+            description: markdown,
         });
     };
 
@@ -83,12 +51,12 @@ export const Description = ({ data }: DescriptionProps) => {
             <SectionHeading
                 icon={AlignLeft}
                 action={
-                    data.description && !isEditing ? (
+                    card.description && !isEditing ? (
                         <Button
                             size="sm"
                             variant="gray"
                             className="h-7 px-2.5 text-xs"
-                            onClick={enableEditing}
+                            onClick={() => setIsEditing(true)}
                         >
                             Edit
                         </Button>
@@ -97,41 +65,43 @@ export const Description = ({ data }: DescriptionProps) => {
             >
                 Description
             </SectionHeading>
-            {isEditing ? (
-                <form action={onSubmit} ref={formRef} className="space-y-2">
-                    <FormTextarea
-                        id="description"
-                        ref={textareaRef}
-                        className="min-h-[120px] w-full bg-card"
+            <div className="pl-8">
+                {isEditing ? (
+                    <RichTextEditor
+                        initialContent={card.description ?? ""}
                         placeholder="Add a more detailed description…"
-                        defaultValue={data.description || undefined}
-                        errors={fieldErrors}
+                        isSubmitting={isLoading}
+                        autoFocus
+                        onSubmit={save}
+                        onCancel={() => setIsEditing(false)}
                     />
-                    <div className="flex items-center gap-x-2">
-                        <FormSubmit>Save</FormSubmit>
-                        <Button
-                            type="button"
-                            onClick={disableEditing}
-                            size="sm"
-                            variant="ghost"
-                        >
-                            Cancel
-                        </Button>
+                ) : card.description ? (
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                            // Let links inside the description open instead of entering edit mode.
+                            if ((e.target as HTMLElement).closest("a")) return;
+                            setIsEditing(true);
+                        }}
+                        onKeyDown={(e) =>
+                            e.key === "Enter" && setIsEditing(true)
+                        }
+                        className="cursor-text rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label="Edit description"
+                    >
+                        <RichTextViewer content={card.description} />
                     </div>
-                </form>
-            ) : data.description ? (
-                <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">
-                    {data.description}
-                </p>
-            ) : (
-                <button
-                    type="button"
-                    onClick={enableEditing}
-                    className="min-h-[72px] w-full rounded-lg border border-dashed border-input px-3.5 py-3 text-left text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                    Add a more detailed description…
-                </button>
-            )}
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => setIsEditing(true)}
+                        className="min-h-[72px] w-full rounded-lg border border-dashed border-input px-3.5 py-3 text-left text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                        Add a more detailed description…
+                    </button>
+                )}
+            </div>
         </section>
     );
 };

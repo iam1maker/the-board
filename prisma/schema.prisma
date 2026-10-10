@@ -25,6 +25,7 @@ model Board {
   imageLinkHTML  String @db.Text
 
   lists          List[]
+  labels         Label[]
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -52,13 +53,100 @@ model Card {
   order       Int
   description String? @db.Text
 
+  completed     Boolean   @default(false)
+  startDate     DateTime?
+  dueDate       DateTime?
+  coverColor    String?
+  coverImageUrl String?   @db.Text
+
   listId      String 
   list        List @relation(fields: [listId],references: [id],onDelete: Cascade)
+
+  labels      CardLabel[]
+  checklists  Checklist[]
+  comments    Comment[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([listId])
+}
+
+// Board-level label; color is a key from constants/labels.ts
+model Label {
+  id        String @id @default(uuid())
+  name      String @default("")
+  color     String
+
+  boardId   String
+  board     Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  cards     CardLabel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([boardId])
+}
+
+model CardLabel {
+  cardId    String
+  card      Card  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  labelId   String
+  label     Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([cardId, labelId])
+  @@index([labelId])
+}
+
+model Checklist {
+  id        String @id @default(uuid())
+  title     String
+
+  cardId    String
+  card      Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  items     ChecklistItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cardId])
+}
+
+model ChecklistItem {
+  id          String  @id @default(uuid())
+  title       String
+  completed   Boolean @default(false)
+  order       Int
+
+  checklistId String
+  checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([checklistId])
+}
+
+// Comment body is stored as Markdown
+model Comment {
+  id        String @id @default(uuid())
+  content   String @db.Text
+
+  cardId    String
+  card      Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  userId    String
+  userName  String @db.Text
+  userImage String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cardId])
 }
 
 enum ACTION {

@@ -1,47 +1,46 @@
-import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
+import { db } from "@/lib/db";
+import { ensureDefaultLabels } from "@/lib/labels";
+import { CARD_DETAIL_INCLUDE } from "@/lib/card-queries";
+
 /**
- * 使用 GET 请求获取特定的卡片信息。
- *
- * @param req - 请求对象，包含请求的细节。
- * @param {params} - 包含卡片ID的对象。
- * @returns 返回一个NextResponse对象，其中包含卡片信息或者错误信息。
+ * 获取卡片详情：标签、清单，以及所在看板的标签和列表（用于标签选择和移动卡片）。
  */
 export async function GET(
     req: Request,
-    { params }: { params: { cardId: string } }
+    { params }: { params: { cardId: string } },
 ) {
     try {
-        // 验证用户认证信息，获取用户ID和组织ID
         const { userId, orgId } = auth();
-        // 如果没有用户ID或组织ID，则返回未授权响应
         if (!userId || !orgId) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
-        // 从数据库中查找独特的卡片信息，包括其所属列表的标题
-        const card = await db.card.findUnique({
-            where: {
-                id: params.cardId,
-                list: {
-                    board: {
-                        orgId,
-                    },
-                },
-            },
-            include: {
-                list: {
-                    select: {
-                        title: true,
-                    },
-                },
-            },
+
+        const where = {
+            id: params.cardId,
+            list: { board: { orgId } },
+        };
+
+        const owner = await db.card.findUnique({
+            where,
+            select: { list: { select: { boardId: true } } },
         });
-        // 返回卡片信息的JSON响应
+        if (!owner) {
+            return new NextResponse("Not found", { status: 404 });
+        }
+
+        // 老看板第一次打开卡片时补上默认标签。
+        await ensureDefaultLabels(owner.list.boardId);
+
+        const card = await db.card.findUnique({
+            where,
+            include: CARD_DETAIL_INCLUDE,
+        });
         return NextResponse.json(card);
     } catch (error) {
-        // 如果有错误发生，则返回内部错误响应
+        console.error("[CARD_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }

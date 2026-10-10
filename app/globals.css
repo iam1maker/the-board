@@ -105,3 +105,53 @@ body,
         scroll-behavior: auto !important;
     }
 }
+
+/* Rendered Markdown in descriptions and comments (editor and viewer). */
+@layer components {
+    .rich-text .tiptap {
+        @apply break-words text-sm leading-relaxed text-foreground;
+    }
+    .rich-text .tiptap > * + * {
+        @apply mt-2;
+    }
+    .rich-text .tiptap h1 {
+        @apply text-xl font-bold;
+    }
+    .rich-text .tiptap h2 {
+        @apply text-lg font-semibold;
+    }
+    .rich-text .tiptap h3 {
+        @apply text-base font-semibold;
+    }
+    .rich-text .tiptap ul {
+        @apply list-disc pl-5;
+    }
+    .rich-text .tiptap ol {
+        @apply list-decimal pl-5;
+    }
+    .rich-text .tiptap li > p {
+        @apply m-0;
+    }
+    .rich-text .tiptap a {
+        @apply text-primary underline underline-offset-2;
+    }
+    .rich-text .tiptap blockquote {
+        @apply border-l-4 border-border pl-3 text-muted-foreground;
+    }
+    .rich-text .tiptap code {
+        @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
+    }
+    .rich-text .tiptap pre {
+        @apply overflow-x-auto rounded-md bg-muted p-3;
+    }
+    .rich-text .tiptap pre code {
+        @apply bg-transparent p-0;
+    }
+    .rich-text .tiptap hr {
+        @apply my-3 border-border;
+    }
+    .rich-text .tiptap p.is-editor-empty:first-child::before {
+        @apply pointer-events-none float-left h-0 text-muted-foreground;
+        content: attr(data-placeholder);
+    }
+}

@@ -31,6 +31,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                     },
                 },
             },
+            include: {
+                labels: true,
+                checklists: { include: { items: true } },
+            },
         });
         if (!cardToCopy) {
             return { error: "Card not found" };
@@ -55,6 +59,30 @@ const handler = async (data: InputType): Promise<ReturnType> => {
                 description: cardToCopy.description,
                 order: newOrder,
                 listId: cardToCopy.listId,
+                startDate: cardToCopy.startDate,
+                dueDate: cardToCopy.dueDate,
+                coverColor: cardToCopy.coverColor,
+                coverImageUrl: cardToCopy.coverImageUrl,
+                // 复制标签和清单；评论和完成状态不复制（与 Trello 一致）。
+                labels: {
+                    create: cardToCopy.labels.map(({ labelId }) => ({
+                        labelId,
+                    })),
+                },
+                checklists: {
+                    create: cardToCopy.checklists.map((checklist) => ({
+                        title: checklist.title,
+                        items: {
+                            create: checklist.items.map(
+                                ({ title, completed, order }) => ({
+                                    title,
+                                    completed,
+                                    order,
+                                })
+                            ),
+                        },
+                    })),
+                },
             },
         });
 
@@ -65,6 +93,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
             action: ACTION.CREATE,
         });
     } catch (error) {
+        console.error("[COPY_CARD]", error);
         return {
             error: "Failed to copy.",
         };

@@ -27,7 +27,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     }
 
     // 从传入的数据中解构出卡片ID，列表ID和其他需要更新的值
-    const { id, boardId, ...values } = data;
+    const { id, boardId, description, ...values } = data;
     let card;
 
     try {
@@ -43,6 +43,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
             },
             data: {
                 ...values,
+                // 空描述存为 null，表示"没有描述"。
+                ...(description !== undefined && {
+                    description: description.trim() ? description : null,
+                }),
             },
         });
         await createAuditLog({
@@ -53,6 +57,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         });
     } catch (error) {
         // 更新失败时，返回错误信息
+        console.error("[UPDATE_CARD]", error);
         return {
             error: "Failed to update card.",
         };

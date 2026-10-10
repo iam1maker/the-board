@@ -1,90 +1,100 @@
 "use client";
 
-import { ElementRef, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { ElementRef, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Columns3 } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 import { toast } from "sonner";
 
-import { CardWithList } from "@/types";
+import { CardDetail } from "@/types";
+import { cn } from "@/lib/utils";
 import { FormInput } from "@/components/form/form-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DialogTitle } from "@/components/ui/dialog";
-import { useAction } from "@/hooks/use-action";
+import { useCardAction } from "@/hooks/use-card-action";
 import { updateCard } from "@/actions/update-card";
 
 interface HeaderProps {
-    data: CardWithList;
+    card: CardDetail;
 }
 
 /**
- * Header组件用于展示和编辑卡片标题，失焦时自动保存。
+ * Header：完成状态 + 可编辑标题（失焦时保存）。
  */
-export const Header = ({ data }: HeaderProps) => {
+export const Header = ({ card }: HeaderProps) => {
     const queryClient = useQueryClient();
-    const params = useParams();
+    const boardId = card.list.board.id;
+    const inputRef = useRef<ElementRef<"input">>(null);
 
-    const { execute } = useAction(updateCard, {
-        onSuccess: (data) => {
-            // 更新成功时，刷新卡片和日志数据。
-            queryClient.invalidateQueries({ queryKey: ["card", data.id] });
-            queryClient.invalidateQueries({ queryKey: ["card-logs", data.id] });
-            setTitle(data.title);
-            toast.success(`Renamed to "${data.title}"`);
-        },
-        onError(error) {
-            toast.error(error);
-        },
+    const { execute: executeRename } = useCardAction(updateCard, card.id, {
+        refreshLogs: true,
+        onSuccess: (data) => toast.success(`Renamed to "${data.title}"`),
     });
 
-    const inputRef = useRef<ElementRef<"input">>(null);
-    const [title, setTitle] = useState(data.title);
+    const { execute: executeComplete } = useCardAction(updateCard, card.id, {
+        refreshLogs: true,
+    });
 
-    const onBlur = () => {
-        inputRef?.current?.form?.requestSubmit();
+    const toggleCompleted = () => {
+        const completed = !card.completed;
+        // 乐观更新：先改缓存，界面立即响应。
+        queryClient.setQueryData<CardDetail>(["card", card.id], (old) =>
+            old ? { ...old, completed } : old,
+        );
+        executeComplete({ id: card.id, boardId, completed });
     };
 
     const onSubmit = (formData: FormData) => {
         const title = formData.get("title") as string;
-        const boardId = params.boardId as string;
-
-        // 标题未变化则不更新。
-        if (title === data.title) {
+        if (title === card.title) {
             return;
         }
-
-        execute({ title, boardId, id: data.id });
+        executeRename({ id: card.id, boardId, title });
     };
 
+    const CompletedIcon = card.completed ? CheckCircle2 : Circle;
+
     return (
-        <div className="px-6 pb-4 pt-6 pr-14">
-            <DialogTitle className="sr-only">{title}</DialogTitle>
-            <form action={onSubmit}>
-                <FormInput
-                    ref={inputRef}
-                    onBlur={onBlur}
-                    id="title"
-                    defaultValue={title}
-                    className="relative -left-2 h-auto w-full truncate rounded-md border-transparent bg-transparent px-2 py-1 text-2xl font-bold tracking-tight text-foreground shadow-none hover:bg-muted focus-visible:border-input focus-visible:bg-card"
-                />
-            </form>
-            <p className="mt-1 flex items-center gap-x-1.5 text-sm text-muted-foreground">
-                <Columns3 className="h-4 w-4" aria-hidden />
-                in list
-                <span className="font-medium text-foreground">
-                    {data.list.title}
-                </span>
-            </p>
+        <div className="flex items-start gap-x-2">
+            <button
+                type="button"
+                onClick={toggleCompleted}
+                aria-pressed={card.completed}
+                aria-label={
+                    card.completed ? "Mark incomplete" : "Mark complete"
+                }
+                title={card.completed ? "Mark incomplete" : "Mark complete"}
+                className={cn(
+                    "mt-2 flex w-6 shrink-0 justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    card.completed
+                        ? "text-emerald-600 hover:text-emerald-700"
+                        : "text-muted-foreground hover:text-foreground",
+                )}
+            >
+                <CompletedIcon className="h-6 w-6" aria-hidden />
+            </button>
+            <div className="min-w-0 flex-1">
+                <DialogTitle className="sr-only">{card.title}</DialogTitle>
+                <form action={onSubmit}>
+                    <FormInput
+                        key={card.title}
+                        ref={inputRef}
+                        onBlur={() => inputRef.current?.form?.requestSubmit()}
+                        id="title"
+                        defaultValue={card.title}
+                        className="h-auto w-full truncate rounded-md border-transparent bg-transparent px-2 py-1 text-2xl font-bold tracking-tight text-foreground shadow-none hover:bg-muted focus-visible:border-input focus-visible:bg-card"
+                    />
+                </form>
+            </div>
         </div>
     );
 };
 
 Header.Skeleton = function HeaderSkeleton() {
     return (
-        <div className="px-6 pb-4 pt-6">
+        <div className="flex items-center gap-x-3">
             <DialogTitle className="sr-only">Loading card</DialogTitle>
-            <Skeleton className="mb-2 h-8 w-64" />
-            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <Skeleton className="h-8 w-64" />
         </div>
     );
 };
