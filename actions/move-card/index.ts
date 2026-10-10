@@ -54,7 +54,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         return { error: "Failed to move card." };
     }
 
-    revalidatePath(`/board/${boardId}`);
+    revalidatePath(`/board/${boardId}`, "layout");
     return { data: card };
 };
 

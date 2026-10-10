@@ -88,7 +88,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
             error: "Failed to create",
         };
     }
-    revalidatePath(`/board/${board.id}`);
+    revalidatePath(`/board/${board.id}`, "layout");
     return { data: board };
 };
 

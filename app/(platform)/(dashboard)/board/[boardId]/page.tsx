@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs";
-import { db } from "@/lib/db";
-import { BOARD_CARD_INCLUDE } from "@/lib/card-queries";
+import { getBoardLists } from "@/lib/board-data";
 import { redirect } from "next/navigation";
 import { ListContainer } from "./_components/list-container";
 
@@ -17,25 +16,7 @@ const BoardIdPage = async ({ params }: BoardIdPageProps) => {
         redirect("/select-org");
     }
 
-    const lists = await db.list.findMany({
-        where: {
-            boardId: params.boardId,
-            board: {
-                orgId,
-            },
-        },
-        include: {
-            cards: {
-                include: BOARD_CARD_INCLUDE,
-                orderBy: {
-                    order: "asc",
-                },
-            },
-        },
-        orderBy: {
-            order: "asc",
-        },
-    });
+    const lists = await getBoardLists(params.boardId, orgId);
 
     return (
         <div className="h-full overflow-x-auto p-4 md:px-6">

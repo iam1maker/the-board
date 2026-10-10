@@ -32,7 +32,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         return { error: "Failed to delete comment." };
     }
 
-    revalidatePath(`/board/${boardId}`);
+    revalidatePath(`/board/${boardId}`, "layout");
     return { data: comment };
 };
 

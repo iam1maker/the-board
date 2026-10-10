@@ -64,7 +64,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
     }
 
     // 重新验证与该列表相关的路径，以触发界面更新
-    revalidatePath(`/board/${boardId}`);
+    revalidatePath(`/board/${boardId}`, "layout");
     return { data: card };
 };
 

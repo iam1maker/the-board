@@ -48,7 +48,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         return { error: "Failed to add comment." };
     }
 
-    revalidatePath(`/board/${boardId}`);
+    revalidatePath(`/board/${boardId}`, "layout");
     return { data: comment };
 };
 

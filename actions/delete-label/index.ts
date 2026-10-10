@@ -28,7 +28,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         return { error: "Failed to delete label." };
     }
 
-    revalidatePath(`/board/${boardId}`);
+    revalidatePath(`/board/${boardId}`, "layout");
     return { data: label };
 };
 

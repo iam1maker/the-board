@@ -31,7 +31,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         return { error: "Failed to delete item." };
     }
 
-    revalidatePath(`/board/${data.boardId}`);
+    revalidatePath(`/board/${data.boardId}`, "layout");
     return { data: result };
 };
 

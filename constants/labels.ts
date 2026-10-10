@@ -1,18 +1,43 @@
 /**
  * Label and cover palettes. Keys are stored in the database; classes are
- * listed in full so Tailwind can see them.
+ * listed in full so Tailwind can see them. `hex` matches the class background
+ * and is used where a raw color is needed (charts).
  */
 export const LABEL_COLORS = {
-    green: { name: "Green", className: "bg-emerald-500 text-white" },
-    yellow: { name: "Yellow", className: "bg-amber-400 text-amber-950" },
-    orange: { name: "Orange", className: "bg-orange-500 text-white" },
-    red: { name: "Red", className: "bg-red-500 text-white" },
-    purple: { name: "Purple", className: "bg-violet-500 text-white" },
-    blue: { name: "Blue", className: "bg-blue-500 text-white" },
-    sky: { name: "Sky", className: "bg-sky-400 text-sky-950" },
-    lime: { name: "Lime", className: "bg-lime-500 text-lime-950" },
-    pink: { name: "Pink", className: "bg-pink-500 text-white" },
-    slate: { name: "Slate", className: "bg-slate-600 text-white" },
+    green: {
+        name: "Green",
+        className: "bg-emerald-500 text-white",
+        hex: "#10b981",
+    },
+    yellow: {
+        name: "Yellow",
+        className: "bg-amber-400 text-amber-950",
+        hex: "#fbbf24",
+    },
+    orange: {
+        name: "Orange",
+        className: "bg-orange-500 text-white",
+        hex: "#f97316",
+    },
+    red: { name: "Red", className: "bg-red-500 text-white", hex: "#ef4444" },
+    purple: {
+        name: "Purple",
+        className: "bg-violet-500 text-white",
+        hex: "#8b5cf6",
+    },
+    blue: { name: "Blue", className: "bg-blue-500 text-white", hex: "#3b82f6" },
+    sky: { name: "Sky", className: "bg-sky-400 text-sky-950", hex: "#38bdf8" },
+    lime: {
+        name: "Lime",
+        className: "bg-lime-500 text-lime-950",
+        hex: "#84cc16",
+    },
+    pink: { name: "Pink", className: "bg-pink-500 text-white", hex: "#ec4899" },
+    slate: {
+        name: "Slate",
+        className: "bg-slate-600 text-white",
+        hex: "#475569",
+    },
 } as const;
 
 export type LabelColor = keyof typeof LABEL_COLORS;

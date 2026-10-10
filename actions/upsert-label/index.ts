@@ -40,7 +40,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         return { error: "Failed to save label." };
     }
 
-    revalidatePath(`/board/${boardId}`);
+    revalidatePath(`/board/${boardId}`, "layout");
     return { data: label };
 };
 
