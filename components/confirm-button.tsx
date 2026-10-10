@@ -12,6 +12,7 @@ interface ConfirmButtonProps {
     onConfirm: () => void;
     disabled?: boolean;
     className?: string;
+    confirmClassName?: string;
 }
 
 /**
@@ -25,6 +26,7 @@ export const ConfirmButton = ({
     onConfirm,
     disabled,
     className,
+    confirmClassName = "px-3 py-1",
 }: ConfirmButtonProps) => {
     const [isConfirming, setIsConfirming] = useState(false);
 
@@ -44,7 +46,10 @@ export const ConfirmButton = ({
     }
 
     return (
-        <div className="flex items-center gap-2 px-3 py-1" role="group">
+        <div
+            className={cn("flex items-center gap-2", confirmClassName)}
+            role="group"
+        >
             <Button
                 type="button"
                 size="sm"

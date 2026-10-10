@@ -102,7 +102,7 @@ export const ListHeader = ({ data, cardCount, onAddCard }: ListHeaderProps) => {
                     aria-label={`Rename list ${data.title}`}
                 >
                     <span className="truncate">{data.title}</span>
-                    <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                    <span className="shrink-0 rounded-full bg-black/5 px-1.5 text-xs font-medium text-muted-foreground">
                         {cardCount}
                     </span>
                 </button>

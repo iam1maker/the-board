@@ -9,7 +9,7 @@ import { MobileSidebar } from "./mobile-sidebar";
 
 export const Navbar = () => {
     return (
-        <nav className="fixed top-0 z-50 flex h-14 w-full items-center border-b bg-card/90 px-4 backdrop-blur supports-[backdrop-filter]:bg-card/75">
+        <nav className="fixed top-0 z-50 flex h-14 w-full items-center border-b bg-card px-4">
             <MobileSidebar />
             <div className="flex items-center gap-x-4">
                 <Logo className="hidden md:flex" />
