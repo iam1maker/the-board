@@ -9,12 +9,13 @@ import { toast } from "sonner";
 import { useEventListener } from "usehooks-ts";
 import { ListOptions } from "./list-options";
 
-interface ListHeaderprops {
+interface ListHeaderProps {
     data: List;
+    cardCount: number;
     onAddCard: () => void;
 }
 
-export const ListHeader = ({ data, onAddCard }: ListHeaderprops) => {
+export const ListHeader = ({ data, cardCount, onAddCard }: ListHeaderProps) => {
     const [title, setTitle] = useState(data.title);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -69,10 +70,7 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderprops) => {
     useEventListener("keydown", onKeyDown);
 
     return (
-        <div
-            className="pt-2 px-2 text-sm font-semibold flex 
-        justify-between items-start gap-x-2"
-        >
+        <div className="flex items-start justify-between gap-x-2 px-2 pt-2 text-sm font-semibold">
             {isEditing ? (
                 <form
                     ref={formRef}
@@ -92,18 +90,22 @@ export const ListHeader = ({ data, onAddCard }: ListHeaderprops) => {
                         id="title"
                         placeholder="Enter list title"
                         defaultValue={title}
-                        className="text-sm px-[7px] py-1 h-7 font-medium border-transparent 
-                        hover:border-input focus:border-input transition truncate bg-transparent"
+                        className="h-8 truncate border-input bg-card px-2 text-sm font-semibold"
                     />
                     <button type="submit" hidden />
                 </form>
             ) : (
-                <div
+                <button
+                    type="button"
                     onClick={enableEditing}
-                    className="w-full text-sm px-2.5 py-1 h-7 font-medium border-transparent"
+                    className="flex h-8 w-full min-w-0 items-center gap-x-2 rounded-md px-2 text-left text-sm font-semibold text-foreground transition-colors hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`Rename list ${data.title}`}
                 >
-                    {data.title}
-                </div>
+                    <span className="truncate">{data.title}</span>
+                    <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                        {cardCount}
+                    </span>
+                </button>
             )}
             <ListOptions data={data} onAddCard={onAddCard} />
         </div>

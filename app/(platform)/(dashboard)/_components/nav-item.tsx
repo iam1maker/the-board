@@ -1,15 +1,16 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { Activity, CreditCard, Layout } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Activity, CreditCard, Layout, Settings } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export type Organization = {
@@ -32,76 +33,76 @@ export const NavItem = ({
     organization,
     onExpand,
 }: NavItemProps) => {
-    const router = useRouter();
     const pathname = usePathname();
 
     const routes = [
         {
-            labbel: "Boards",
-            icon: <Layout className="w-4 h-4 mr-2" />,
+            label: "Boards",
+            icon: Layout,
             href: `/organization/${organization.id}`,
         },
         {
-            labbel: "Activity",
-            icon: <Activity className="w-4 h-4 mr-2" />,
+            label: "Activity",
+            icon: Activity,
             href: `/organization/${organization.id}/activity`,
         },
         {
-            labbel: "Settings",
-            icon: <Layout className="w-4 h-4 mr-2" />,
+            label: "Settings",
+            icon: Settings,
             href: `/organization/${organization.id}/settings`,
         },
         {
-            labbel: "Billing",
-            icon: <CreditCard className="w-4 h-4 mr-2" />,
+            label: "Billing",
+            icon: CreditCard,
             href: `/organization/${organization.id}/billing`,
         },
     ];
-
-    const onClick = (href: string) => {
-        router.push(href);
-    };
 
     return (
         <AccordionItem value={organization.id} className="border-none">
             <AccordionTrigger
                 onClick={() => onExpand(organization.id)}
                 className={cn(
-                    "flex items-center gap-x-2 p-1.5 text-neutral-700 rounded-md hover:bg-neutral-500/10 transition text-start no-underline hover:no-underline",
-                    isActive && !isExpanded && "bg-sky-500/10 text-sky-700"
+                    "flex items-center gap-x-2 rounded-lg px-2 py-1.5 text-start text-foreground no-underline transition-colors hover:bg-accent hover:no-underline",
+                    isActive && !isExpanded && "bg-secondary text-secondary-foreground"
                 )}
             >
-                <div className="flex items-center gap-x-2">
-                    <div className="w-7 h-7 relative">
+                <div className="flex items-center gap-x-2.5">
+                    <div className="relative h-7 w-7 shrink-0">
                         <Image
                             fill
                             src={organization.imageUrl}
-                            alt="Organization"
-                            className="rounded-sm object-cover"
+                            alt=""
+                            className="rounded-md object-cover"
                         />
                     </div>
-                    <span className="font-medium text-sm">
+                    <span className="text-sm font-medium">
                         {organization.name}
                     </span>
                 </div>
             </AccordionTrigger>
-            <AccordionContent className="pt-1 text-neutral-700">
-                {routes.map((route) => (
-                    <Button
-                        key={route.href}
-                        size="sm"
-                        onClick={() => onClick(route.href)}
-                        className={cn(
-                            "w-full font-normal justify-start pl-10 mb-1",
-                            pathname === route.href &&
-                                "bg-sky-500/10 bg-sky-700"
-                        )}
-                        variant={"ghost"}
-                    >
-                        {route.icon}
-                        {route.labbel}
-                    </Button>
-                ))}
+            <AccordionContent className="pb-1 pt-1">
+                <ul className="space-y-0.5">
+                    {routes.map(({ label, icon: Icon, href }) => {
+                        const isCurrent = pathname === href;
+                        return (
+                            <li key={href}>
+                                <Link
+                                    href={href}
+                                    aria-current={isCurrent ? "page" : undefined}
+                                    className={cn(
+                                        "flex h-9 items-center gap-x-2 rounded-md pl-11 pr-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                                        isCurrent &&
+                                            "bg-secondary font-medium text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
+                                    )}
+                                >
+                                    <Icon className="h-4 w-4" aria-hidden />
+                                    {label}
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
             </AccordionContent>
         </AccordionItem>
     );
@@ -110,8 +111,8 @@ export const NavItem = ({
 NavItem.Skeleton = function SkeletonNavItem() {
     return (
         <div className="flex items-center gap-x-2">
-            <div className="w-10 h-10 relative shrink-0">
-                <Skeleton className="h-full w-full absolute" />
+            <div className="relative h-10 w-10 shrink-0">
+                <Skeleton className="absolute h-full w-full" />
             </div>
             <Skeleton className="h-10 w-full" />
         </div>

@@ -61,31 +61,34 @@ export const FormPopover = ({
             <PopoverContent
                 align={align}
                 className="w-80 pt-3"
+                aria-label="Create board"
                 side={side}
                 sideOffset={sideOffset}
             >
-                <div className="text-sm font-medium text-center text-neutral-600 pb-4">
-                    Create Board
+                <div className="pb-4 text-center text-sm font-semibold text-foreground">
+                    Create board
                 </div>
                 <PopoverClose ref={closeRef} asChild>
                     <Button
                         variant="ghost"
-                        className="h-auto w-auto p-2  absolute top-2 right-2 text-neutral-600"
+                        className="absolute right-2 top-2 h-auto w-auto p-2 text-muted-foreground"
+                        aria-label="Close"
                     >
-                        <X className="h-4 w-4" />
+                        <X className="h-4 w-4" aria-hidden />
                     </Button>
                 </PopoverClose>
-                <form action={onSubmit} className=" space-y-4">
+                <form action={onSubmit} className="space-y-4">
                     <div className="space-y-4">
                         <FormPicker id="image" errors={fieldErrors} />
                         <FormInput
                             id="title"
                             label="Board title"
+                            placeholder="e.g. Product launch"
                             type="text"
                             errors={fieldErrors}
                         />
                     </div>
-                    <FormSubmit className="w-full">Create</FormSubmit>
+                    <FormSubmit className="w-full">Create board</FormSubmit>
                 </form>
             </PopoverContent>
         </Popover>

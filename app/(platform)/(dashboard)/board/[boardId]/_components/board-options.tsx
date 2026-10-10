@@ -1,16 +1,18 @@
 "use client";
 
+import { MoreHorizontal, X } from "lucide-react";
+import { toast } from "sonner";
+
+import { deleteBoard } from "@/actions/delete-board";
+import { useAction } from "@/hooks/use-action";
 import { Button } from "@/components/ui/button";
+import { ConfirmButton } from "@/components/confirm-button";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
     PopoverClose,
 } from "@/components/ui/popover";
-import { MoreHorizontal, X } from "lucide-react";
-import { deleteBoard } from "@/actions/delete-board";
-import { useAction } from "@/hooks/use-action";
-import { toast } from "sonner";
 
 interface BoardOptionsProps {
     id: string;
@@ -30,34 +32,34 @@ export const BoardOptions = ({ id }: BoardOptionsProps) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button className="h-auto w-auto p-2" variant={"transparent"}>
-                    <MoreHorizontal className="h-4 w-4 " />
+                <Button
+                    className="h-9 w-9 p-0"
+                    variant="transparent"
+                    aria-label="Board actions"
+                >
+                    <MoreHorizontal className="h-5 w-5" aria-hidden />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent
-                className="px-0 pt-3 pb-3"
-                side="bottom"
-                align="start"
-            >
-                <div className="text-sm font-medium text-center text-neutral-600 pb-4">
+            <PopoverContent className="w-64 px-0 py-3" side="bottom" align="end">
+                <div className="pb-3 text-center text-sm font-semibold text-foreground">
                     Board actions
                 </div>
                 <PopoverClose asChild>
                     <Button
-                        className=" h-auto w-auto p-2 absolute top-2 right-2 text-neutral-600"
-                        variant={"ghost"}
+                        className="absolute right-2 top-2 h-auto w-auto p-2 text-muted-foreground"
+                        variant="ghost"
+                        aria-label="Close"
                     >
-                        <X className="h-4 w-4 " />
+                        <X className="h-4 w-4" aria-hidden />
                     </Button>
                 </PopoverClose>
-                <Button
-                    variant={"ghost"}
+                <ConfirmButton
+                    label="Delete this board"
+                    confirmLabel="Delete board"
                     disabled={isLoading}
-                    onClick={onDelete}
-                    className=" rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
-                >
-                    Delete this board
-                </Button>
+                    onConfirm={onDelete}
+                    className="h-auto w-full justify-start rounded-none px-5 py-2 font-normal"
+                />
             </PopoverContent>
         </Popover>
     );

@@ -1,8 +1,9 @@
 "use client";
 
-import { Copy, Trash } from "lucide-react";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConfirmButton } from "@/components/confirm-button";
 import { CardWithList } from "@/types";
 import { useAction } from "@/hooks/use-action";
 import { useParams } from "next/navigation";
@@ -74,28 +75,28 @@ export const Actions = ({ data }: ActionsProps) => {
 
     // 渲染复制和删除按钮。
     return (
-        <div className=" space-y-2 mt-2">
-            <p className=" text-xs font-semibold">Actions</p>
+        <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Actions
+            </p>
             <Button
                 onClick={onCopy}
                 disabled={isLoadingCopy} // 当复制操作加载中时，禁用按钮。
                 variant={"gray"}
                 size={"inline"}
-                className=" w-full justify-start"
+                className="w-full justify-start"
             >
-                <Copy className="h-4 w-4 mr-2" />
+                <Copy className="h-4 w-4" aria-hidden />
                 Copy
             </Button>
-            <Button
-                onClick={onDelete}
-                disabled={isLoadingDelete} // 当删除操作加载中时，禁用按钮。
-                variant={"gray"}
-                size={"inline"}
-                className=" w-full justify-start"
-            >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete
-            </Button>
+            {/* 删除需要二次确认，防止误删。 */}
+            <ConfirmButton
+                label="Delete"
+                confirmLabel="Delete"
+                disabled={isLoadingDelete}
+                onConfirm={onDelete}
+                className="h-auto w-full justify-start bg-muted px-2 py-1.5"
+            />
         </div>
     );
 };
@@ -107,13 +108,10 @@ export const Actions = ({ data }: ActionsProps) => {
  */
 Actions.Skeleton = function ActionsSkeleton() {
     return (
-        <div className=" space-y-2 mt-2">
-            <Skeleton className=" w-20 h-4 bg-neutral-200" />{" "}
-            {/* 复制按钮占位符 */}
-            <Skeleton className=" w-fill h-8 bg-neutral-200" />{" "}
-            {/* 删除按钮占位符 */}
-            <Skeleton className=" w-full h-8 bg-neutral-200" />{" "}
-            {/* 分隔线占位符 */}
+        <div className="space-y-2">
+            <Skeleton className="h-4 w-20" /> {/* 标题占位符 */}
+            <Skeleton className="h-8 w-full" /> {/* 复制按钮占位符 */}
+            <Skeleton className="h-8 w-full" /> {/* 删除按钮占位符 */}
         </div>
     );
 };

@@ -67,24 +67,26 @@ export const ListForm = () => {
                 <form
                     action={onSubmit}
                     ref={formRef}
-                    className="w-full p-3 rounded-md bg-white space-y-4 shadow-md"
+                    className="w-full space-y-3 rounded-xl bg-list p-3 shadow-md ring-1 ring-black/5"
                 >
                     <FormInput
                         ref={inputRef}
                         id="title"
                         errors={fieldErrors}
-                        className="text-sm px-2 py-1 h-7 font-medium border-transparent hover:border-input focus:border-input transition"
+                        className="h-9 bg-card px-2 text-sm font-medium"
                         placeholder="Enter list title"
                     />
                     <input hidden value={params.boardId} name="boardId" />
                     <div className="flex items-center gap-x-1">
                         <FormSubmit>Add list</FormSubmit>
                         <Button
+                            type="button"
                             onClick={disableEditing}
                             size={"sm"}
                             variant={"ghost"}
+                            aria-label="Cancel"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-5 w-5" aria-hidden />
                         </Button>
                     </div>
                 </form>
@@ -96,10 +98,9 @@ export const ListForm = () => {
         <ListWrapper>
             <button
                 onClick={enableEditing}
-                className="w-full rounded-md bg-white/80 hover:bg-white/50
-                 transition p-3 flex items-center font-medium text-sm"
+                className="flex w-full items-center rounded-xl bg-black/30 p-3 text-sm font-medium text-white ring-1 ring-white/20 backdrop-blur-sm transition-colors hover:bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" aria-hidden />
                 Add a list
             </button>
         </ListWrapper>

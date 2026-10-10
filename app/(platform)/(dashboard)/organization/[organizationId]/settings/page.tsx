@@ -1,24 +1,24 @@
-import { OrganizationProfile } from "@clerk/nextjs"
+import { OrganizationProfile } from "@clerk/nextjs";
 
 const Settings = () => {
     return (
-        <div>
+        <div className="mb-20 w-full">
             <OrganizationProfile
-            appearance={{
-                elements: {
-                    rootBox: {
-                        boxShadow: "none",
-                        width: "100%",
+                appearance={{
+                    elements: {
+                        rootBox: {
+                            width: "100%",
+                        },
+                        card: {
+                            width: "100%",
+                            maxWidth: "100%",
+                            boxShadow: "none",
+                            border: "1px solid hsl(var(--border))",
+                        },
                     },
-                    card:{
-                        border:"1px solid",
-                        boxShadow: "none",
-                        width:"100%"
-                    }
-                },
-            }}
+                }}
             />
         </div>
-    )
-}
-export default Settings
+    );
+};
+export default Settings;

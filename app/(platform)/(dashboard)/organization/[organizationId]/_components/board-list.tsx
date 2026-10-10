@@ -1,14 +1,16 @@
-import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import { FormPopover } from "@/components/form/form-popover";
-import { db } from "@/lib/db";
-import { Hint } from "@/components/hint";
-import { HelpCircle, User2 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs";
+import { Plus } from "lucide-react";
+
+import { db } from "@/lib/db";
+import { FormPopover } from "@/components/form/form-popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MAX_FREE_BOARDS } from "@/constants/board";
 import { getAvailableCount } from "@/lib/org-limit";
 import { checkSubscription } from "@/lib/subscription";
+
+const SKELETON_COUNT = 8;
 
 export const BoardList = async () => {
     const { orgId } = auth();
@@ -28,71 +30,69 @@ export const BoardList = async () => {
 
     const availableCount = await getAvailableCount();
     const isPro = await checkSubscription();
+    const remaining = Math.max(MAX_FREE_BOARDS - availableCount, 0);
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center font-semibold text-lg text-neutral-700">
-                <User2 className="h-6 w-6 mr-2" />
-                Your boards
+        <section className="space-y-4">
+            <div className="flex items-baseline justify-between">
+                <h2 className="text-lg font-semibold text-foreground">
+                    Your boards
+                </h2>
+                <span className="text-sm text-muted-foreground">
+                    {boards.length} {boards.length === 1 ? "board" : "boards"}
+                </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {boards.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                    No boards yet. Create your first one to start organizing work.
+                </p>
+            )}
+            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {boards.map((board) => (
-                    <Link
-                        key={board.id}
-                        href={`/board/${board.id}`}
-                        className="group relative aspect-video bg-no-repeat bg-center 
-                        bg-cover bg-sky-700 rounded-sm h-full w-full p-2 overflow-hidden"
-                        style={{
-                            backgroundImage: `url(${board.imageThumbUrl})`,
-                        }}
-                    >
-                        <div className=" absolute inset-0 bg-black/30 group-hover:bg-black/40 transition" />
-                        <p className=" relative font-semibold text-white">
-                            {board.title}
-                        </p>
-                    </Link>
-                ))}
-                <FormPopover sideOffset={10} side="right">
-                    <div
-                        role="button"
-                        className="aspect-video relative h-full w-full bg-muted 
-                    rounded-sm flex flex-col gap-y-1 items-center justify-center 
-                    hover:opacity-75 transition"
-                    >
-                        <p className="text-sm">Create new board</p>
-                        <span className="text-xs">
-                            {isPro
-                                ? "Unlimited"
-                                : `${
-                                      MAX_FREE_BOARDS - availableCount
-                                  } remaining`}
-                        </span>
-                        <Hint
-                            sideOffset={40}
-                            description={`
-                            Free Workspaces can only have 5 open boards.For unlimited boards, upgrade this workspace.
-                        `}
+                    <li key={board.id}>
+                        <Link
+                            href={`/board/${board.id}`}
+                            className="group relative flex aspect-video w-full items-end overflow-hidden rounded-xl bg-primary bg-cover bg-center bg-no-repeat p-3 shadow-sm ring-offset-2 ring-offset-background transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            style={{
+                                backgroundImage: `url(${board.imageThumbUrl})`,
+                            }}
                         >
-                            <HelpCircle className="absolute bottom-2 right-2 h-[14px] w-[14px]" />
-                        </Hint>
-                    </div>
-                </FormPopover>
-            </div>
-        </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-colors group-hover:from-black/80" />
+                            <p className="relative line-clamp-2 text-sm font-semibold text-white">
+                                {board.title}
+                            </p>
+                        </Link>
+                    </li>
+                ))}
+                <li>
+                    <FormPopover sideOffset={10} side="right">
+                        <button
+                            type="button"
+                            className="flex aspect-video w-full flex-col items-center justify-center gap-y-1 rounded-xl border-2 border-dashed border-input bg-card text-muted-foreground transition-colors hover:border-primary hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                            <Plus className="h-5 w-5" aria-hidden />
+                            <span className="text-sm font-medium">
+                                Create new board
+                            </span>
+                            <span className="text-xs">
+                                {isPro
+                                    ? "Unlimited on Pro"
+                                    : `${remaining} of ${MAX_FREE_BOARDS} free boards left`}
+                            </span>
+                        </button>
+                    </FormPopover>
+                </li>
+            </ul>
+        </section>
     );
 };
 
 BoardList.Skeleton = function SkeletonBoardList() {
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+                <Skeleton key={i} className="aspect-video w-full rounded-xl" />
+            ))}
         </div>
     );
 };

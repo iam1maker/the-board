@@ -2,11 +2,12 @@
 
 import { toast } from "sonner";
 
-import { Layout } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { CardWithList } from "@/types";
 import { FormInput } from "@/components/form/form-input";
 import { ElementRef, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DialogTitle } from "@/components/ui/dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 
@@ -82,24 +83,27 @@ export const Header = ({ data }: HeaderProps) => {
 
     // 渲染Header组件的JSX结构。
     return (
-        <div className="flex items-start gap-x-3 mb-6 w-full">
-            <Layout className="h-5 w-5 mt-1 text-neutral-700" />
-            <div className="w-full">
+        <div className="flex w-full items-start gap-x-3 border-b bg-muted/50 px-6 pb-4 pt-6 pr-12">
+            <CreditCard
+                className="mt-2 h-5 w-5 shrink-0 text-muted-foreground"
+                aria-hidden
+            />
+            <div className="w-full min-w-0">
+                <DialogTitle className="sr-only">{title}</DialogTitle>
                 <form action={onSubmit}>
                     <FormInput
                         ref={inputRef}
                         onBlur={onBlur}
                         id="title"
                         defaultValue={title}
-                        className=" font-semibold text-xl px-1 text-neutral-700 
-                        bg-transparent border-transparent relative -left-1.5 w-[90%]
-                      focus-visible:bg-white focus-visible:border-input mb-0.5
-                        truncate"
+                        className="relative -left-2 mb-1 h-10 w-full truncate border-transparent bg-transparent px-2 text-xl font-semibold text-foreground hover:border-input focus-visible:border-input focus-visible:bg-card"
                     />
                 </form>
                 <p className="text-sm text-muted-foreground">
-                    in list
-                    <span className=" underline"> {data.list.title} </span>
+                    in list{" "}
+                    <span className="rounded bg-secondary px-1.5 py-0.5 font-medium text-secondary-foreground">
+                        {data.list.title}
+                    </span>
                 </p>
             </div>
         </div>
@@ -113,11 +117,12 @@ export const Header = ({ data }: HeaderProps) => {
  */
 Header.Skeleton = function HeaderSkeleton() {
     return (
-        <div className="flex items-start gap-x-3 mb-6">
-            <Skeleton className="h-6 w-6 mt-1 bg-neutral-200" />
+        <div className="flex items-start gap-x-3 border-b bg-muted/50 px-6 pb-4 pt-6">
+            <DialogTitle className="sr-only">Loading card</DialogTitle>
+            <Skeleton className="mt-1 h-6 w-6" />
             <div>
-                <Skeleton className="w-24 h-6 mb-1 bg-neutral-200" />
-                <Skeleton className="w-12 h-4 bg-neutral-200" />
+                <Skeleton className="mb-2 h-7 w-48" />
+                <Skeleton className="h-4 w-24" />
             </div>
         </div>
     );

@@ -25,7 +25,7 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
 
         const { execute, fieldErrors } = useAction(createCard, {
             onSuccess(data) {
-                toast.success(`Card "${data.title}" caeated`);
+                toast.success(`Card "${data.title}" created`);
                 formRef.current?.reset();
             },
             onError(error) {
@@ -83,11 +83,13 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
                     <div className="flex items-center gap-x-1">
                         <FormSubmit>Add card</FormSubmit>
                         <Button
+                            type="button"
                             onClick={disableEditing}
                             size={"sm"}
                             variant={"ghost"}
+                            aria-label="Cancel"
                         >
-                            <X className="h-5 w-5" />
+                            <X className="h-5 w-5" aria-hidden />
                         </Button>
                     </div>
                 </form>
@@ -100,9 +102,9 @@ export const CardForm = forwardRef<HTMLTextAreaElement, CardFormProps>(
                     onClick={enableEditing}
                     size={"sm"}
                     variant={"ghost"}
-                    className=" h-auto px-2 py-1.5 w-full justify-start text-muted-foreground text-sm"
+                    className="h-auto w-full justify-start px-2 py-1.5 text-sm text-muted-foreground hover:bg-black/5 hover:text-foreground"
                 >
-                    <Plus className=" h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4" aria-hidden />
                     Add a card
                 </Button>
             </div>

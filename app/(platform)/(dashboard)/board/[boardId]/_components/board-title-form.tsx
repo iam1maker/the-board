@@ -65,8 +65,7 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
                     id="title"
                     onBlur={onBlur}
                     defaultValue={title}
-                    className="text-lg font-bold px-[7px] py-1 h-7 bg-transparent
-                     focus-visible:outline-none focus-visible:ring-transparent border-none"
+                    className="h-9 border-white/40 bg-white/10 px-2 text-lg font-bold text-white focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-0"
                 />
             </form>
         );
@@ -76,7 +75,8 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
         <Button
             onClick={enableEditing}
             variant={"transparent"}
-            className="font-bold text-lg h-auto w-auto p-1 px-2"
+            className="h-9 w-auto px-2 text-lg font-bold"
+            aria-label={`Rename board ${title}`}
         >
             {title}
         </Button>

@@ -1,31 +1,26 @@
-import Link from "next/link"
-import Image from "next/image"
-import localFont from "next/font/local"
+import Link from "next/link";
+import Image from "next/image";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-
-const headingFont = localFont({
-    src: "../../public/fonts/font.woff2"
-})
-
-export const Logo = () => {
-    return (
-        <Link href="/">
-            <div className="hover:opacity-75 transition items-center gap-x-2 hidden md:flex">
-                <Image
-                    src="/logo.svg"
-                    alt="Logo"
-                    height={30}
-                    width={30}>
-                </Image>
-                <p className={cn(
-                    "tetx-lg text-neutral-700 pb-1",
-                    headingFont.className
-                )}>
-                    Taskify
-                </p>
-            </div>
-        </Link>
-    )
+interface LogoProps {
+    className?: string;
+    href?: string;
 }
+
+export const Logo = ({ className, href = "/" }: LogoProps) => {
+    return (
+        <Link
+            href={href}
+            className={cn(
+                "flex items-center gap-x-2 rounded-md transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                className
+            )}
+        >
+            <Image src="/logo.svg" alt="" height={28} width={28} priority />
+            <span className="text-lg font-bold tracking-tight text-foreground">
+                Taskify
+            </span>
+        </Link>
+    );
+};

@@ -1,28 +1,23 @@
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
-import Link from "next/link";
 
 const Navbar = () => {
     return (
-        <div
-            className="fixed top-0 w-full h-14 px-4 border-b
-    shadow-sm bg-white flex items-center"
-        >
-            <div className="md:max-w-screen-2xl mx-auto flex items-center w-full justify-between">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+            <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
                 <Logo />
-                <div
-                    className="space-x-4 md:block md:w-auto flex 
-            items-center justify-between w-full"
-                >
-                    <Button size="sm" variant="outline" asChild>
-                        <Link href="/sign-in">Login</Link>
+                <nav className="flex items-center gap-x-2">
+                    <Button size="sm" variant="ghost" asChild>
+                        <Link href="/sign-in">Log in</Link>
                     </Button>
-                    <Button size="sm" asChild>
-                        <Link href="/sign-up">Get Taskify for free</Link>
+                    <Button size="sm" variant="primary" asChild>
+                        <Link href="/sign-up">Get started</Link>
                     </Button>
-                </div>
+                </nav>
             </div>
-        </div>
+        </header>
     );
 };
 

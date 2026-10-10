@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Ghost, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useLocalStorage } from "usehooks-ts";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 
@@ -26,7 +26,7 @@ export const Sidebar = ({ storageKey = "t-siderbar-state" }: SidebarProps) => {
         },
     });
 
-    const defautAccordionValue: string[] = Object.keys(expanded).reduce(
+    const defaultAccordionValue: string[] = Object.keys(expanded).reduce(
         (acc: string[], key: string) => {
             if (expanded[key]) {
                 acc.push(key);
@@ -61,24 +61,25 @@ export const Sidebar = ({ storageKey = "t-siderbar-state" }: SidebarProps) => {
 
     return (
         <>
-            <div className="font-medium text-xs flex items-center mb-1">
-                <span className="pl-4">Workspaces</span>
+            <div className="mb-2 flex items-center">
+                <span className="pl-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Workspaces
+                </span>
                 <Button
                     asChild
-                    type="button"
                     size="icon"
                     variant="ghost"
-                    className="ml-auto"
+                    className="ml-auto h-8 w-8"
                 >
-                    <Link href="/select-org">
-                        <Plus className="h-4 w-4"></Plus>
+                    <Link href="/select-org" aria-label="Add workspace">
+                        <Plus className="h-4 w-4" aria-hidden />
                     </Link>
                 </Button>
             </div>
             <Accordion
                 type="multiple"
-                defaultValue={defautAccordionValue}
-                className="space-y-2"
+                defaultValue={defaultAccordionValue}
+                className="space-y-1"
             >
                 {userMemberships.data?.map(({ organization }) => (
                     <NavItem
@@ -87,7 +88,7 @@ export const Sidebar = ({ storageKey = "t-siderbar-state" }: SidebarProps) => {
                         isExpanded={expanded[organization.id]}
                         organization={organization as Organization}
                         onExpand={onExpand}
-                    ></NavItem>
+                    />
                 ))}
             </Accordion>
         </>

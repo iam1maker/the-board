@@ -28,11 +28,16 @@ export const CardModal = () => {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent>
+            <DialogContent
+                className="gap-0 p-0"
+                aria-describedby={undefined}
+                // Don't jump straight into editing the title when the card opens.
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 {!cardData ? <Header.Skeleton /> : <Header data={cardData} />}
-                <div className=" grid grid-cols-1 md:grid-cols-4 md:gap-4">
-                    <div className=" col-span-3">
-                        <div className=" w-full space-y-6">
+                <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-4">
+                    <div className="md:col-span-3">
+                        <div className="w-full space-y-8">
                             {!cardData ? (
                                 <Description.Skeleton />
                             ) : (

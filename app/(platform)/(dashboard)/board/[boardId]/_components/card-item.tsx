@@ -20,8 +20,13 @@ export const CardItem = ({ data, index }: CardItemProps) => {
                     ref={provided.innerRef}
                     role="button"
                     onClick={() => cardModal.onOpen(data.id)}
-                    className=" truncate border-2 border-transparent hover:border-black py-2 
-        px-3 text-sm bg-white rounded-md shadow-sm"
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            cardModal.onOpen(data.id);
+                        }
+                    }}
+                    aria-label={`Open card ${data.title}`}
+                    className="cursor-pointer break-words rounded-lg border bg-card px-3 py-2 text-sm text-foreground shadow-sm transition-[border-color,box-shadow] duration-150 hover:border-primary/50 hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     {data.title}
                 </div>

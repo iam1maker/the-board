@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useAction } from "@/hooks/use-action";
 import { toast } from "sonner";
 import { updateCard } from "@/actions/update-card";
+import { cn } from "@/lib/utils";
 
 interface DescriptionProps {
     data: CardWithList;
@@ -77,21 +78,24 @@ export const Description = ({ data }: DescriptionProps) => {
 
     return (
         <div className=" flex items-start gap-x-3 w-full">
-            <AlignLeft className="h-5 w-5 mt-0.5 text-neutral-700" />
+            <AlignLeft
+                className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
+                aria-hidden
+            />
             <div className="w-full">
-                <p className=" font-semibold text-neutral-700 mb-2">
+                <h3 className="mb-2 font-semibold text-foreground">
                     Description
-                </p>
+                </h3>
                 {isEditing ? (
                     <form
                         action={onSubmit}
                         ref={formRef}
-                        className=" space-y-2"
+                        className="space-y-2"
                     >
                         <FormTextarea
                             id="description"
                             ref={textareaRef}
-                            className=" w-full mt-2"
+                            className="min-h-[96px] w-full"
                             placeholder="Add a more detailed description"
                             defaultValue={data.description || undefined}
                             errors={fieldErrors}
@@ -109,13 +113,18 @@ export const Description = ({ data }: DescriptionProps) => {
                         </div>
                     </form>
                 ) : (
-                    <div
+                    <button
+                        type="button"
                         onClick={enableEditing}
-                        role="button"
-                        className=" min-h-[78px] bg-neutral-200 text-sm font-medium py-3 px-3.5 rounded-md"
+                        className={cn(
+                            "min-h-[78px] w-full whitespace-pre-wrap rounded-lg px-3.5 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            data.description
+                                ? "bg-transparent text-foreground hover:bg-muted"
+                                : "bg-muted text-muted-foreground hover:bg-accent"
+                        )}
                     >
-                        {data.description || "Add a more detailed description"}
-                    </div>
+                        {data.description || "Add a more detailed description…"}
+                    </button>
                 )}
             </div>
         </div>
@@ -124,11 +133,12 @@ export const Description = ({ data }: DescriptionProps) => {
 
 Description.Skeleton = function DescriptionSkeleton() {
     return (
-        <div className="flex items-start gap-x-3 w-full">
-            <Skeleton className="h-6 w-6 bg-neutral-200 " />
-            <div className=" w-full"></div>
-            <Skeleton className=" w-24 h-6 mb-2 bg-neutral-200 " />
-            <Skeleton className=" w-full h-[78px] bg-neutral-200 " />
+        <div className="flex w-full items-start gap-x-3">
+            <Skeleton className="h-6 w-6" />
+            <div className="w-full">
+                <Skeleton className="mb-2 h-6 w-24" />
+                <Skeleton className="h-[78px] w-full" />
+            </div>
         </div>
     );
 };
