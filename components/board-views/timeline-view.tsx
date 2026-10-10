@@ -411,29 +411,105 @@ const TimelineRow = ({
                         )}
                     </button>
                 ) : (
-                    <button
-                        type="button"
-                        onClick={open}
-                        title={`${card.title} · ${dateText}`}
-                        aria-label={`${card.title}: ${dateText}`}
-                        className={cn(
-                            "absolute top-1/2 flex h-6 -translate-y-1/2 items-center overflow-hidden rounded-md px-2 text-xs font-medium shadow-sm transition-[filter] hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                            barColor,
-                            startIdx < 0 && "rounded-l-none",
-                            endIdx >= dayCount && "rounded-r-none",
-                        )}
-                        style={{
-                            left: visibleStart * dayWidth + 2,
-                            width:
-                                (visibleEnd - visibleStart + 1) * dayWidth - 4,
-                        }}
-                    >
-                        {(visibleEnd - visibleStart + 1) * dayWidth > 90 && (
-                            <span className="truncate">{card.title}</span>
-                        )}
-                    </button>
+                    <TimelineBar
+                        title={card.title}
+                        dateText={dateText}
+                        barColor={barColor}
+                        left={visibleStart * dayWidth + 2}
+                        width={(visibleEnd - visibleStart + 1) * dayWidth - 4}
+                        trackWidth={dayCount * dayWidth}
+                        clippedStart={startIdx < 0}
+                        clippedEnd={endIdx >= dayCount}
+                        onOpen={open}
+                    />
                 )}
             </div>
         </div>
+    );
+};
+
+const BAR_TEXT_FONT = "500 12px";
+const BAR_PADDING_X = 16;
+const OUTSIDE_LABEL_GAP = 6;
+
+let measureCtx: CanvasRenderingContext2D | null = null;
+
+/** Rendered width of bar text, so a title is only placed inside when it fully fits. */
+const measureBarText = (text: string) => {
+    if (typeof document === "undefined") return text.length * 7;
+    measureCtx ??= document.createElement("canvas").getContext("2d");
+    if (!measureCtx) return text.length * 7;
+    measureCtx.font = `${BAR_TEXT_FONT} ${getComputedStyle(document.body).fontFamily}`;
+    return measureCtx.measureText(text).width;
+};
+
+interface TimelineBarProps {
+    title: string;
+    dateText: string;
+    barColor: string;
+    left: number;
+    width: number;
+    trackWidth: number;
+    clippedStart: boolean;
+    clippedEnd: boolean;
+    onOpen: () => void;
+}
+
+/**
+ * A card's bar. The title sits inside when it fits; otherwise it moves outside
+ * the bar end (or before the bar near the right edge) instead of being clipped.
+ */
+const TimelineBar = ({
+    title,
+    dateText,
+    barColor,
+    left,
+    width,
+    trackWidth,
+    clippedStart,
+    clippedEnd,
+    onOpen,
+}: TimelineBarProps) => {
+    const textWidth = measureBarText(title);
+    const fitsInside = textWidth + BAR_PADDING_X <= width;
+    const roomAfter = trackWidth - (left + width) - OUTSIDE_LABEL_GAP;
+    const labelAfter = roomAfter >= textWidth || roomAfter >= left;
+
+    return (
+        <>
+            <button
+                type="button"
+                onClick={onOpen}
+                title={`${title} · ${dateText}`}
+                aria-label={`${title}: ${dateText}`}
+                className={cn(
+                    "absolute top-1/2 flex h-6 -translate-y-1/2 items-center rounded-md px-2 text-xs font-medium shadow-sm transition-[filter] hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                    barColor,
+                    clippedStart && "rounded-l-none",
+                    clippedEnd && "rounded-r-none",
+                )}
+                style={{ left, width }}
+            >
+                {fitsInside && (
+                    <span className="whitespace-nowrap">{title}</span>
+                )}
+            </button>
+            {!fitsInside && (
+                <button
+                    type="button"
+                    onClick={onOpen}
+                    tabIndex={-1}
+                    aria-hidden
+                    className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-xs font-medium text-foreground hover:underline"
+                    style={
+                        labelAfter
+                            ? { left: left + width + OUTSIDE_LABEL_GAP }
+                            : { right: trackWidth - left + OUTSIDE_LABEL_GAP }
+                    }
+                >
+                    {title}
+                </button>
+            )}
+        </>
     );
 };
